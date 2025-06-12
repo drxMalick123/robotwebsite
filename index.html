@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusAuth | Secure Access Portal</title>
+    <style>
+        /* Base Styles & Variables */
+        :root {
+            --primary: #6C5CE7;
+            --primary-dark: #5649C0;
+            --secondary: #00CEFF;
+            --accent: #00FFE7;
+            --light: #F8F9FF;
+            --dark: #2D3436;
+            --success: #00FFA3; /* Green for success */
+            --error: #FF3E6D;
+            --radius: 16px;
+            --shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            --glow: 0 0 15px rgba(108, 92, 231, 0.3);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #F8F9FF, #EFF1FF);
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 460px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+            transition: var(--transition);
+            transform-style: preserve-3d;
+        }
+
+        /* Robot */
+        .robot-container {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 40px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .robot-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        .robot {
+            width: 140px;
+            height: 220px;
+            position: relative;
+            transform-origin: center bottom;
+            animation: float 6s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        .robot-head {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            position: relative;
+            margin: 0 auto;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            transform-style: preserve-3d;
+        }
+
+        .robot-face {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 50px;
+        }
+
+        .robot-eyes {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            position: absolute;
+            top: 15px;
+        }
+
+        .robot-eye {
+            width: 20px;
+            height: 20px;
+            background: var(--dark);
+            border-radius: 50%;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .robot-eye::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            top: 4px;
+            left: 4px;
+        }
+
+        .robot-eye-lid {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: -1px;
+            left: -1px;
+            transform: scaleY(0);
+            transform-origin: center top;
+            transition: transform 0.3s ease;
+        }
+
+        .robot-mouth {
+            width: 30px;
+            height: 6px;
+            background: var(--dark);
+            border-radius: 3px;
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: var(--transition);
+        }
+
+        .robot-body {
+            width: 80px;
+            height: 100px;
+            background: white;
+            border-radius: 20px;
+            margin: 15px auto 0;
+            position: relative;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .robot-arm {
+            position: absolute;
+            width: 20px;
+            height: 60px;
+            background: white;
+            border-radius: 10px;
+            top: 15px;
+            transition: var(--transition);
+        }
+
+        .robot-arm.left {
+            left: -15px;
+            transform-origin: top center;
+        }
+
+        .robot-arm.right {
+            right: -15px;
+        }
+
+        .robot-hand {
+            position: absolute;
+            width: 20px;
+            height: 12px;
+            background: white;
+            border-radius: 0 0 10px 10px;
+            bottom: -10px;
+        }
+
+        /* Form Styles */
+        .form-container {
+            padding: 40px;
+            transition: var(--transition);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h2 {
+            color: var(--dark);
+            font-size: 2rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-header p {
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+
+        .form-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: #f1f3ff;
+            padding: 6px;
+            border-radius: 30px;
+            position: relative;
+        }
+
+        .toggle-indicator {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: calc(50% - 6px);
+            height: calc(100% - 12px);
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            z-index: 1;
+        }
+
+        .toggle-btn {
+            padding: 10px 30px;
+            border: none;
+            background: transparent;
+            color: #6c757d;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            z-index: 2;
+        }
+
+        .toggle-btn.active {
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            color: #999;
+            font-size: 0.9rem;
+            pointer-events: none;
+            transition: var(--transition);
+            background: white;
+            padding: 0 5px;
+            z-index: 1; /* Ensure label is above input background */
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: #f8f9fa;
+            position: relative;
+            z-index: 0; /* Input below label */
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 255, 231, 0.2);
+            background: white;
+        }
+
+        .form-control:focus + label,
+        .form-control:not(:placeholder-shown) + label {
+            top: -10px;
+            left: 10px;
+            font-size: 0.8rem;
+            color: var(--primary);
+        }
+
+        .form-control::placeholder {
+            color: transparent;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+            box-shadow: var(--glow);
+            position: relative;
+            overflow: hidden;
+            display: flex; /* For centering content and spinner */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.3) 0%,
+                rgba(255, 255, 255, 0) 60%
+            );
+            transform: rotate(30deg);
+            transition: var(--transition);
+        }
+
+        .btn:not(:disabled):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn:not(:disabled):hover::after {
+            transform: translateX(100%) rotate(30deg);
+        }
+
+        .btn:not(:disabled):active {
+            transform: translateY(0);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .form-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .form-footer a:hover {
+            color: var(--secondary);
+        }
+
+        /* Form States */
+        .login-form {
+            display: block;
+        }
+
+        .register-form, .forgot-form {
+            display: none;
+        }
+
+        .back-to-login {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .back-to-login svg {
+            margin-right: 8px;
+            transition: var(--transition);
+        }
+
+        .back-to-login:hover svg {
+            transform: translateX(-3px);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-15px) rotate(2deg);
+            }
+        }
+
+        @keyframes wave {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            20%, 60% {
+                transform: rotate(-60deg);
+            }
+            40%, 80% {
+                transform: rotate(60deg);
+            }
+        }
+
+        @keyframes wink {
+            0%, 100% {
+                transform: scaleY(1);
+            }
+            50% {
+                transform: scaleY(0.1);
+            }
+        }
+
+        @keyframes nod {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            30%, 70% {
+                transform: translateY(-10px) rotate(-5deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0) rotate(0deg);
+            }
+            20%, 60% {
+                transform: translateX(-10px) rotate(-5deg);
+            }
+            40%, 80% {
+                transform: translateX(10px) rotate(5deg);
+            }
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                transform: scaleY(1);
+            }
+            50% {
+                transform: scaleY(0.05);
+            }
+        }
+
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Helper classes */
+        .wink {
+            animation: wink 0.4s ease;
+        }
+
+        .nod {
+            animation: nod 1s ease;
+        }
+
+        .shake {
+            animation: shake 0.8s ease;
+        }
+
+        .blink .robot-eye-lid {
+            animation: blink 0.3s ease;
+        }
+
+        .tilt-head {
+            transform: rotate(-5deg);
+        }
+
+        .smile .robot-mouth {
+            height: 4px;
+            width: 40px;
+            border-radius: 2px 2px 10px 10px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spinner 0.8s linear infinite;
+            margin-left: 10px; /* Space between text and spinner */
+            display: none; /* Hidden by default */
+        }
+
+        .btn .spinner {
+            display: inline-block; /* Spinner visible when .btn has text + spinner inside */
+        }
+
+        /* Success Message */
+        .success-message {
+            background-color: var(--success);
+            color: white;
+            padding: 15px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+            display: none; /* Hidden by default */
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: fadeInSlideDown 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-message.hide {
+            animation: fadeOutSlideUp 0.5s ease-in forwards;
+        }
+
+        @keyframes fadeOutSlideUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .form-container {
+                padding: 30px 20px;
+            }
+            
+            .robot {
+                width: 120px;
+                height: 200px;
+            }
+            
+            .robot-head {
+                width: 90px;
+                height: 90px;
+            }
+
+            .form-header h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="robot-container">
+            <div class="robot" id="robot">
+                <div class="robot-head" id="robot-head">
+                    <div class="robot-face">
+                        <div class="robot-eyes">
+                            <div class="robot-eye" id="left-eye">
+                                <div class="robot-eye-lid"></div>
+                            </div>
+                            <div class="robot-eye" id="right-eye">
+                                <div class="robot-eye-lid"></div>
+                            </div>
+                        </div>
+                        <div class="robot-mouth" id="robot-mouth"></div>
+                    </div>
+                </div>
+                <div class="robot-body">
+                    <div class="robot-arm left" id="left-arm">
+                        <div class="robot-hand"></div>
+                    </div>
+                    <div class="robot-arm right">
+                        <div class="robot-hand"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <div id="global-success-message" class="success-message hidden"></div>
+
+            <div class="form-header">
+                <h2 id="form-title">Welcome to Nexus</h2>
+                <p id="form-subtitle">Secure access to your digital universe</p>
+            </div>
+
+            <div class="form-toggle" id="main-toggle">
+                <div class="toggle-indicator" id="toggle-indicator"></div>
+                <button class="toggle-btn active" id="login-toggle">Login</button>
+                <button class="toggle-btn" id="register-toggle">Register</button>
+            </div>
+
+            <form class="login-form" id="login-form">
+                <div class="form-group">
+                    <input type="email" id="login-email" class="form-control" placeholder="Enter your email" required>
+                    <label for="login-email">Email</label>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="login-password" class="form-control" placeholder="Enter your password" required>
+                    <label for="login-password">Password</label>
+                </div>
+                <button type="submit" class="btn" id="login-btn">
+                    Access Nexus
+                    <span class="spinner hidden"></span>
+                </button>
+                <div class="form-footer">
+                    <a id="forgot-password-link">Forgot password?</a>
+                </div>
+            </form>
+
+            <form class="register-form" id="register-form">
+                <div class="form-group">
+                    <input type="text" id="register-name" class="form-control" placeholder="Enter your full name" required>
+                    <label for="register-name">Full Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="register-email" class="form-control" placeholder="Enter your email" required>
+                    <label for="register-email">Email</label>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="register-password" class="form-control" placeholder="Create a password" required>
+                    <label for="register-password">Password</label>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="register-confirm" class="form-control" placeholder="Confirm your password" required>
+                    <label for="register-confirm">Confirm Password</label>
+                </div>
+                <button type="submit" class="btn" id="register-btn">
+                    Join Nexus
+                    <span class="spinner hidden"></span>
+                </button>
+                <div class="form-footer">
+                    Already have an account? <a id="switch-to-login">Login</a>
+                </div>
+            </form>
+
+            <form class="forgot-form" id="forgot-form">
+                <div class="back-to-login" id="back-to-login">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back to login
+                </div>
+                <div class="form-header">
+                    <h2>Reset Password</h2>
+                    <p>Enter your email to receive a reset link</p>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="forgot-email" class="form-control" placeholder="Enter your email" required>
+                    <label for="forgot-email">Email</label>
+                </div>
+                <button type="submit" class="btn" id="forgot-btn">
+                    Send Reset Link
+                    <span class="spinner hidden"></span>
+                </button>
+                <div class="form-footer">
+                    Don't have an account? <a id="switch-to-register">Register</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const loginToggle = document.getElementById('login-toggle');
+            const registerToggle = document.getElementById('register-toggle');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const forgotForm = document.getElementById('forgot-form');
+            const switchToLogin = document.getElementById('switch-to-login');
+            const switchToRegister = document.getElementById('switch-to-register');
+            const forgotPasswordLink = document.getElementById('forgot-password-link');
+            const backToLogin = document.getElementById('back-to-login');
+            const toggleIndicator = document.getElementById('toggle-indicator');
+            const mainToggle = document.getElementById('main-toggle');
+            const formTitle = document.getElementById('form-title');
+            const formSubtitle = document.getElementById('form-subtitle');
+            
+            const robot = document.getElementById('robot');
+            const robotHead = document.getElementById('robot-head');
+            const leftEye = document.getElementById('left-eye');
+            const rightEye = document.getElementById('right-eye');
+            const leftArm = document.getElementById('left-arm');
+            const robotMouth = document.getElementById('robot-mouth');
+            const passwordInputs = document.querySelectorAll('input[type="password"]');
+
+            const loginBtn = document.getElementById('login-btn');
+            const registerBtn = document.getElementById('register-btn');
+            const forgotBtn = document.getElementById('forgot-btn');
+            const globalSuccessMessage = document.getElementById('global-success-message');
+            
+            // Mouse position tracking for eye movement
+            let mouseX = 0, mouseY = 0;
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                updateEyePosition();
+            });
+
+            function updateEyePosition() {
+                const robotRect = robot.getBoundingClientRect();
+                const robotCenterX = robotRect.left + robotRect.width / 2;
+                const robotCenterY = robotRect.top + robotRect.height / 2;
+                
+                // Calculate angle between robot and mouse
+                const angleX = (mouseX - robotCenterX) / 50;
+                const angleY = (mouseY - robotCenterY) / 100;
+                
+                // Limit eye movement range
+                const limitedX = Math.max(-3, Math.min(3, angleX));
+                const limitedY = Math.max(-1, Math.min(1, angleY));
+                
+                leftEye.style.transform = `translate(${limitedX}px, ${limitedY}px)`;
+                rightEye.style.transform = `translate(${limitedX}px, ${limitedY}px)`;
+            }
+
+            // Wave on load
+            setTimeout(() => {
+                leftArm.style.animation = 'wave 2s ease-in-out';
+                setTimeout(() => {
+                    leftArm.style.animation = '';
+                }, 2000);
+            }, 1000);
+
+            // Random animations
+            function randomAnimations() {
+                // Random blink every 3-8 seconds
+                setTimeout(() => {
+                    robotHead.classList.add('blink');
+                    setTimeout(() => {
+                        robotHead.classList.remove('blink');
+                        randomAnimations();
+                    }, 300);
+                }, Math.random() * 5000 + 3000);
+            }
+            randomAnimations();
+
+            // Wink on hover
+            robot.addEventListener('mouseenter', () => {
+                robotHead.classList.add('wink');
+                robotHead.classList.add('tilt-head');
+                robotMouth.classList.add('smile');
+                setTimeout(() => {
+                    robotHead.classList.remove('wink');
+                }, 400);
+            });
+
+            robot.addEventListener('mouseleave', () => {
+                robotHead.classList.remove('tilt-head');
+                robotMouth.classList.remove('smile');
+            });
+
+            // Close eyes when focusing on password
+            passwordInputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    document.querySelectorAll('.robot-eye-lid').forEach(lid => {
+                        lid.style.transform = 'scaleY(1)';
+                    });
+                });
+                
+                input.addEventListener('blur', () => {
+                    document.querySelectorAll('.robot-eye-lid').forEach(lid => {
+                        lid.style.transform = 'scaleY(0)';
+                    });
+                });
+            });
+
+            // --- New Functions for Loading and Success ---
+
+            /**
+             * Controls the loading state of a button.
+             * @param {HTMLElement} button The button element.
+             * @param {string} originalText The original text of the button.
+             * @param {boolean} isLoading True to show loading, false to hide.
+             */
+            function setLoadingState(button, originalText, isLoading) {
+                const spinner = button.querySelector('.spinner');
+                if (isLoading) {
+                    button.disabled = true;
+                    button.classList.add('btn-loading'); // Add a class for specific loading styles if needed
+                    button.innerHTML = `Processing... <span class="spinner"></span>`;
+                    spinner.classList.remove('hidden'); // Ensure spinner is visible
+                } else {
+                    button.disabled = false;
+                    button.classList.remove('btn-loading');
+                    button.innerHTML = originalText;
+                    spinner.classList.add('hidden'); // Ensure spinner is hidden
+                }
+            }
+
+            /**
+             * Displays a global success message.
+             * @param {string} message The message to display.
+             */
+            function showGlobalSuccessMessage(message) {
+                globalSuccessMessage.textContent = message;
+                globalSuccessMessage.style.backgroundColor = 'var(--success)';
+                globalSuccessMessage.classList.remove('hidden', 'hide');
+                // Remove the 'hide' class and force reflow to restart animation
+                void globalSuccessMessage.offsetWidth; 
+
+                // Automatically hide after 4 seconds
+                setTimeout(() => {
+                    globalSuccessMessage.classList.add('hide');
+                    setTimeout(() => {
+                        globalSuccessMessage.classList.add('hidden');
+                        globalSuccessMessage.style.backgroundColor = ''; // Reset background color
+                    }, 500); // Match fadeOutSlideUp animation duration
+                }, 4000);
+            }
+
+            /**
+             * Displays a global error message.
+             * @param {string} message The message to display.
+             */
+            function showGlobalErrorMessage(message) {
+                globalSuccessMessage.textContent = message;
+                globalSuccessMessage.style.backgroundColor = 'var(--error)'; /* Change to error color */
+                globalSuccessMessage.classList.remove('hidden', 'hide');
+                void globalSuccessMessage.offsetWidth; 
+
+                setTimeout(() => {
+                    globalSuccessMessage.classList.add('hide');
+                    setTimeout(() => {
+                        globalSuccessMessage.classList.add('hidden');
+                        globalSuccessMessage.style.backgroundColor = ''; // Reset background color
+                    }, 500); 
+                }, 4000);
+            }
+
+
+            // Form toggle functions
+            function showLogin() {
+                toggleIndicator.style.transform = 'translateX(0)';
+                loginToggle.classList.add('active');
+                registerToggle.classList.remove('active');
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                forgotForm.style.display = 'none';
+                mainToggle.style.display = 'flex';
+                formTitle.textContent = 'Welcome to Nexus';
+                formSubtitle.textContent = 'Secure access to your digital universe';
+                globalSuccessMessage.classList.add('hidden'); // Hide messages when switching forms
+            }
+
+            function showRegister() {
+                toggleIndicator.style.transform = 'translateX(100%)';
+                registerToggle.classList.add('active');
+                loginToggle.classList.remove('active');
+                registerForm.style.display = 'block';
+                loginForm.style.display = 'none';
+                forgotForm.style.display = 'none';
+                mainToggle.style.display = 'flex';
+                formTitle.textContent = 'Join Nexus';
+                formSubtitle.textContent = 'Create your secure account';
+                globalSuccessMessage.classList.add('hidden'); // Hide messages when switching forms
+            }
+
+            function showForgotPassword() {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'none';
+                forgotForm.style.display = 'block';
+                mainToggle.style.display = 'none';
+                formTitle.textContent = ''; // Clear main title for specific forgot password title
+                formSubtitle.textContent = '';
+                globalSuccessMessage.classList.add('hidden'); // Hide messages when switching forms
+            }
+
+            // Event Listeners for Form Toggles
+            loginToggle.addEventListener('click', showLogin);
+            registerToggle.addEventListener('click', showRegister);
+            switchToLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                showLogin();
+            });
+            switchToRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                showRegister();
+            });
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showForgotPassword();
+            });
+            backToLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                showLogin();
+            });
+
+            // Form submission with validation and loading/success states
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                // Simple validation
+                if (email && password.length >= 6) {
+                    setLoadingState(loginBtn, 'Access Nexus', true);
+
+                    // Simulate API call
+                    setTimeout(() => {
+                        const isSuccess = Math.random() > 0.3; // Simulate 70% success rate
+                        setLoadingState(loginBtn, 'Access Nexus', false);
+
+                        if (isSuccess) {
+                            showGlobalSuccessMessage('Login successful! Welcome back.');
+                            robotHead.classList.add('nod');
+                            robotMouth.classList.add('smile');
+                            setTimeout(() => {
+                                robotHead.classList.remove('nod');
+                                robotMouth.classList.remove('smile');
+                                // Optionally clear inputs or redirect here
+                                // loginForm.reset(); 
+                            }, 1000);
+                        } else {
+                            showGlobalErrorMessage('Login failed. Please check your credentials.');
+                            robotHead.classList.add('shake');
+                            setTimeout(() => {
+                                robotHead.classList.remove('shake');
+                            }, 800);
+                        }
+                    }, 2000); // Simulate 2-second network request
+                } else {
+                    showGlobalErrorMessage('Please enter a valid email and a password of at least 6 characters.');
+                    robotHead.classList.add('shake');
+                    setTimeout(() => {
+                        robotHead.classList.remove('shake');
+                    }, 800);
+                }
+            });
+
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('register-name').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                const confirm = document.getElementById('register-confirm').value;
+                
+                // Simple validation
+                if (name && email && password.length >= 6 && password === confirm) {
+                    setLoadingState(registerBtn, 'Join Nexus', true);
+
+                    // Simulate API call
+                    setTimeout(() => {
+                        const isSuccess = Math.random() > 0.3; // Simulate 70% success rate
+                        setLoadingState(registerBtn, 'Join Nexus', false);
+
+                        if (isSuccess) {
+                            showGlobalSuccessMessage('Registration successful! You can now login.');
+                            robotHead.classList.add('nod');
+                            robotMouth.classList.add('smile');
+                            setTimeout(() => {
+                                robotHead.classList.remove('nod');
+                                robotMouth.classList.remove('smile');
+                                registerForm.reset(); // Clear form
+                                showLogin(); // Automatically switch to login tab
+                            }, 1000);
+                        } else {
+                            showGlobalErrorMessage('Registration failed. Please try again.');
+                            robotHead.classList.add('shake');
+                            setTimeout(() => {
+                                robotHead.classList.remove('shake');
+                            }, 800);
+                        }
+                    }, 2000);
+                } else {
+                    showGlobalErrorMessage('Please fill all fields correctly. Passwords must match and be at least 6 characters.');
+                    robotHead.classList.add('shake');
+                    setTimeout(() => {
+                        robotHead.classList.remove('shake');
+                    }, 800);
+                }
+            });
+
+            forgotForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('forgot-email').value;
+                
+                // Simple validation
+                if (email) {
+                    setLoadingState(forgotBtn, 'Send Reset Link', true);
+
+                    // Simulate API call
+                    setTimeout(() => {
+                        const isSuccess = Math.random() > 0.3; // Simulate 70% success rate
+                        setLoadingState(forgotBtn, 'Send Reset Link', false);
+
+                        if (isSuccess) {
+                            showGlobalSuccessMessage('Password reset link sent! Check your email.');
+                            robotHead.classList.add('nod');
+                            robotMouth.classList.add('smile');
+                            setTimeout(() => {
+                                robotHead.classList.remove('nod');
+                                robotMouth.classList.remove('smile');
+                                forgotForm.reset(); // Clear form
+                                showLogin(); // Return to login page
+                            }, 1000);
+                        } else {
+                            showGlobalErrorMessage('Failed to send reset link. Please check your email address.');
+                            robotHead.classList.add('shake');
+                            setTimeout(() => {
+                                robotHead.classList.remove('shake');
+                            }, 800);
+                        }
+                    }, 2000);
+                } else {
+                    showGlobalErrorMessage('Please enter your email address to reset password.');
+                    robotHead.classList.add('shake');
+                    setTimeout(() => {
+                        robotHead.classList.remove('shake');
+                    }, 800);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
